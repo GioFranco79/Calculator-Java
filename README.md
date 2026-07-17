@@ -71,7 +71,7 @@ mvn -version
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <url-del-repositorio>
+git clone https://github.com/GioFranco79/Calculator-Java.git
 cd Calculadora
 ```
 
