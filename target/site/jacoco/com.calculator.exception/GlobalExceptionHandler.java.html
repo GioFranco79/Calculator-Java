@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">calculator-api</a> &gt; <a href="index.source.html" class="el_package">com.calculator.exception</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package com.calculator.exception;
+
+import com.calculator.dto.ErrorResponse;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
+
+/**
+ * Centralized exception handler for all REST controllers.
+ */
+@RestControllerAdvice
+<span class="fc" id="L18">public class GlobalExceptionHandler {</span>
+
+    @ExceptionHandler(DivisionByZeroException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleDivisionByZero(DivisionByZeroException ex) {
+<span class="fc" id="L22">        return ResponseEntity</span>
+<span class="fc" id="L23">                .status(HttpStatus.UNPROCESSABLE_ENTITY)</span>
+<span class="fc" id="L24">                .body(buildError(ex.getErrorCode(), ex.getMessage()));</span>
+    }
+
+    @ExceptionHandler(NegativeSqrtException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleNegativeSqrt(NegativeSqrtException ex) {
+<span class="fc" id="L29">        return ResponseEntity</span>
+<span class="fc" id="L30">                .status(HttpStatus.UNPROCESSABLE_ENTITY)</span>
+<span class="fc" id="L31">                .body(buildError(ex.getErrorCode(), ex.getMessage()));</span>
+    }
+
+    @ExceptionHandler(CalculatorException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleCalculatorException(CalculatorException ex) {
+<span class="fc" id="L36">        return ResponseEntity</span>
+<span class="fc" id="L37">                .status(HttpStatus.BAD_REQUEST)</span>
+<span class="fc" id="L38">                .body(buildError(ex.getErrorCode(), ex.getMessage()));</span>
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleValidation(MethodArgumentNotValidException ex) {
+<span class="fc" id="L43">        String details = ex.getBindingResult().getFieldErrors().stream()</span>
+<span class="fc" id="L44">                .map(fe -&gt; fe.getField() + &quot;: &quot; + fe.getDefaultMessage())</span>
+<span class="fc" id="L45">                .collect(Collectors.joining(&quot;, &quot;));</span>
+<span class="fc" id="L46">        return ResponseEntity</span>
+<span class="fc" id="L47">                .status(HttpStatus.BAD_REQUEST)</span>
+<span class="fc" id="L48">                .body(buildError(&quot;VALIDATION_ERROR&quot;, details));</span>
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleConstraintViolation(ConstraintViolationException ex) {
+<span class="fc" id="L53">        return ResponseEntity</span>
+<span class="fc" id="L54">                .status(HttpStatus.BAD_REQUEST)</span>
+<span class="fc" id="L55">                .body(buildError(&quot;VALIDATION_ERROR&quot;, ex.getMessage()));</span>
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleGeneric(Exception ex) {
+<span class="fc" id="L60">        return ResponseEntity</span>
+<span class="fc" id="L61">                .status(HttpStatus.INTERNAL_SERVER_ERROR)</span>
+<span class="fc" id="L62">                .body(buildError(&quot;INTERNAL_ERROR&quot;, &quot;An unexpected error occurred.&quot;));</span>
+    }
+
+    // -------------------------------------------------------------------------
+
+    private ErrorResponse buildError(String code, String message) {
+<span class="fc" id="L68">        return new ErrorResponse(code, message, LocalDateTime.now());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

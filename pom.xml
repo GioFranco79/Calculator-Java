@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.4</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.calculator</groupId>
+    <artifactId>calculator-api</artifactId>
+    <version>1.0.0</version>
+    <name>calculator-api</name>
+    <description>Online Calculator REST API</description>
+    <packaging>jar</packaging>
+
+    <properties>
+        <java.version>21</java.version>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Test: incluye JUnit 5, Mockito, AssertJ, MockMvc -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Hamcrest (matchers adicionales para MockMvc) -->
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JUnit Platform Launcher – necesario para compilar TestExecutionListener -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!--
+                Maven Surefire 3.x + JUnit 5:
+                - useFile=false  → vuelca todo a consola (no a archivos .txt)
+                - statelessTestsetReporter activa el reporter de JUnit Platform
+                  que usa los @DisplayName reales, incluidos los @Nested,
+                  mostrando la jerarquía clase > grupo > test.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- Todo va a consola, no a archivos .txt -->
+                    <useFile>false</useFile>
+                    <reportFormat>plain</reportFormat>
+
+                    <!--
+                        Activa el ConsoleLauncher de JUnit Platform con salida
+                        en modo árbol (tree). Imprime cada test con su @DisplayName
+                        completo, incluyendo jerarquía de @Nested.
+                        Valores: none | flat | tree | verbose
+                    -->
+                    <argLine>-Djunit.platform.launcher.interceptors.enabled=true</argLine>
+                    <systemPropertyVariables>
+                        <junit.platform.output.capture.stdout>true</junit.platform.output.capture.stdout>
+                        <junit.platform.output.capture.stderr>true</junit.platform.output.capture.stderr>
+                        <!-- Imprime árbol con @DisplayName en consola durante mvn test -->
+                        <surefire.junit5.extensions.enabled>true</surefire.junit5.extensions.enabled>
+                    </systemPropertyVariables>
+
+                    <!--
+                        Reporter XML: usa @DisplayName en clase, grupo (@Nested)
+                        y nombre de cada test individual.
+                    -->
+                    <statelessTestsetReporter
+                        implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5Xml30StatelessReporter">
+                        <usePhrasedTestSuiteClassName>true</usePhrasedTestSuiteClassName>
+                        <usePhrasedTestCaseClassName>true</usePhrasedTestCaseClassName>
+                        <usePhrasedTestCaseMethodName>true</usePhrasedTestCaseMethodName>
+                    </statelessTestsetReporter>
+
+                    <!-- Captura stdout/stderr de cada test -->
+                    <consoleOutputReporter
+                        implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5ConsoleOutputReporter"/>
+
+                    <!--
+                        Este reporter controla las líneas que aparecen en consola:
+                        - usePhrasedClassNameInRunning          → "Running CalculatorService – Unit Tests"
+                        - usePhrasedClassNameInTestCaseSummary  → nombre de clase en el resumen
+                    -->
+                    <statelessTestsetInfoReporter
+                        implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoReporter">
+                        <usePhrasedClassNameInRunning>true</usePhrasedClassNameInRunning>
+                        <usePhrasedClassNameInTestCaseSummary>true</usePhrasedClassNameInTestCaseSummary>
+                    </statelessTestsetInfoReporter>
+                </configuration>
+            </plugin>
+
+            <!-- JaCoCo: reporte de cobertura Branch/Line al 100 % -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <executions>
+                    <!-- Instrumenta clases antes de los tests -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <!-- Genera reporte HTML en target/site/jacoco -->
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <!-- Falla el build si la cobertura cae del umbral -->
+                    <execution>
+                        <id>check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>PACKAGE</element>
+                                    <!-- Excluye DTOs y clase de arranque; solo lógica de negocio -->
+                                    <excludes>
+                                        <exclude>com.calculator.dto.*</exclude>
+                                        <exclude>com.calculator.CalculatorApiApplication</exclude>
+                                    </excludes>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>1.0</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>1.0</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

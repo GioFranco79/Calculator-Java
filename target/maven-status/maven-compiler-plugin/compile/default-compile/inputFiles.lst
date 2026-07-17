@@ -1,0 +1,11 @@
+D:\Antigravity\Java\Calculadora\src\main\java\com\calculator\CalculatorApiApplication.java
+D:\Antigravity\Java\Calculadora\src\main\java\com\calculator\controller\CalculatorController.java
+D:\Antigravity\Java\Calculadora\src\main\java\com\calculator\dto\ErrorResponse.java
+D:\Antigravity\Java\Calculadora\src\main\java\com\calculator\dto\OperationRequest.java
+D:\Antigravity\Java\Calculadora\src\main\java\com\calculator\dto\OperationResponse.java
+D:\Antigravity\Java\Calculadora\src\main\java\com\calculator\dto\UnaryOperationRequest.java
+D:\Antigravity\Java\Calculadora\src\main\java\com\calculator\exception\CalculatorException.java
+D:\Antigravity\Java\Calculadora\src\main\java\com\calculator\exception\DivisionByZeroException.java
+D:\Antigravity\Java\Calculadora\src\main\java\com\calculator\exception\GlobalExceptionHandler.java
+D:\Antigravity\Java\Calculadora\src\main\java\com\calculator\exception\NegativeSqrtException.java
+D:\Antigravity\Java\Calculadora\src\main\java\com\calculator\service\CalculatorService.java

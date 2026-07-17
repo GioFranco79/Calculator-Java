@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalculatorController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">calculator-api</a> &gt; <a href="index.source.html" class="el_package">com.calculator.controller</a> &gt; <span class="el_source">CalculatorController.java</span></div><h1>CalculatorController.java</h1><pre class="source lang-java linenums">package com.calculator.controller;
+
+import com.calculator.dto.OperationRequest;
+import com.calculator.dto.OperationResponse;
+import com.calculator.dto.UnaryOperationRequest;
+import com.calculator.service.CalculatorService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * REST controller exposing all calculator operations.
+ *
+ * &lt;pre&gt;
+ * POST /api/calculator/add        { &quot;operandA&quot;: 5, &quot;operandB&quot;: 3 }
+ * POST /api/calculator/subtract   { &quot;operandA&quot;: 5, &quot;operandB&quot;: 3 }
+ * POST /api/calculator/multiply   { &quot;operandA&quot;: 5, &quot;operandB&quot;: 3 }
+ * POST /api/calculator/divide     { &quot;operandA&quot;: 5, &quot;operandB&quot;: 3 }
+ * POST /api/calculator/sqrt       { &quot;operand&quot;: 25 }
+ * POST /api/calculator/power      { &quot;operandA&quot;: 2, &quot;operandB&quot;: 10 }
+ * &lt;/pre&gt;
+ */
+@RestController
+@RequestMapping(&quot;/api/calculator&quot;)
+public class CalculatorController {
+
+    private final CalculatorService calculatorService;
+
+<span class="fc" id="L29">    public CalculatorController(CalculatorService calculatorService) {</span>
+<span class="fc" id="L30">        this.calculatorService = calculatorService;</span>
+<span class="fc" id="L31">    }</span>
+
+    // -------------------------------------------------------------------------
+    // Binary operations
+    // -------------------------------------------------------------------------
+
+    @PostMapping(&quot;/add&quot;)
+    public ResponseEntity&lt;OperationResponse&gt; add(@Valid @RequestBody OperationRequest request) {
+<span class="fc" id="L39">        double result = calculatorService.add(request.operandA(), request.operandB());</span>
+<span class="fc" id="L40">        return ResponseEntity.ok(new OperationResponse(&quot;add&quot;, result));</span>
+    }
+
+    @PostMapping(&quot;/subtract&quot;)
+    public ResponseEntity&lt;OperationResponse&gt; subtract(@Valid @RequestBody OperationRequest request) {
+<span class="fc" id="L45">        double result = calculatorService.subtract(request.operandA(), request.operandB());</span>
+<span class="fc" id="L46">        return ResponseEntity.ok(new OperationResponse(&quot;subtract&quot;, result));</span>
+    }
+
+    @PostMapping(&quot;/multiply&quot;)
+    public ResponseEntity&lt;OperationResponse&gt; multiply(@Valid @RequestBody OperationRequest request) {
+<span class="fc" id="L51">        double result = calculatorService.multiply(request.operandA(), request.operandB());</span>
+<span class="fc" id="L52">        return ResponseEntity.ok(new OperationResponse(&quot;multiply&quot;, result));</span>
+    }
+
+    @PostMapping(&quot;/divide&quot;)
+    public ResponseEntity&lt;OperationResponse&gt; divide(@Valid @RequestBody OperationRequest request) {
+<span class="fc" id="L57">        double result = calculatorService.divide(request.operandA(), request.operandB());</span>
+<span class="fc" id="L58">        return ResponseEntity.ok(new OperationResponse(&quot;divide&quot;, result));</span>
+    }
+
+    @PostMapping(&quot;/power&quot;)
+    public ResponseEntity&lt;OperationResponse&gt; power(@Valid @RequestBody OperationRequest request) {
+<span class="fc" id="L63">        double result = calculatorService.power(request.operandA(), request.operandB());</span>
+<span class="fc" id="L64">        return ResponseEntity.ok(new OperationResponse(&quot;power&quot;, result));</span>
+    }
+
+    // -------------------------------------------------------------------------
+    // Unary operations
+    // -------------------------------------------------------------------------
+
+    @PostMapping(&quot;/sqrt&quot;)
+    public ResponseEntity&lt;OperationResponse&gt; sqrt(@Valid @RequestBody UnaryOperationRequest request) {
+<span class="fc" id="L73">        double result = calculatorService.sqrt(request.operand());</span>
+<span class="fc" id="L74">        return ResponseEntity.ok(new OperationResponse(&quot;sqrt&quot;, result));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
