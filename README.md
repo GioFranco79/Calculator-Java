@@ -142,7 +142,7 @@ Todos los endpoints reciben y devuelven **JSON**. La URL base es `/api/calculato
 ```json
 {
   "errorCode": "VALIDATION_ERROR",
-  "message": "operandB: operandB must not be null",
+  "message": "operandB: operando B no debe ser nulo",
   "timestamp": "2026-07-17T16:00:00.000"
 }
 ```
